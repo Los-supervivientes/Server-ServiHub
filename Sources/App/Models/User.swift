@@ -1,5 +1,5 @@
 //
-//  Users.swift
+//  User.swift
 //
 //
 //  Created by Jose Bueno Cruz on 10/7/24.
@@ -23,10 +23,10 @@ final class User: Model, Content, @unchecked Sendable {
     @Field(key: "name")
     var name: String
     
-    @Field(key: "firstsurname")
+    @Field(key: "first_surname")
     var firstSurname: String
     
-    @Field(key: "secondsurname")
+    @Field(key: "second_surname")
     var secondSurname: String?
     
     @Field(key: "mobile")
@@ -71,25 +71,17 @@ extension User {
         
         // MARK: Validations
         static func validations(_ validations: inout Vapor.Validations) {
-            // No este vacio
             validations.add("name", as: String.self, is: !.empty, required: true)
-            // No este vacio
-            validations.add("firstSurname", as: String.self, is: !.empty, required: true)
-            // No este vacio
-            validations.add("mobile", as: String.self, is: !.empty, required: true)
-            // Formato email
-            validations.add("email", as: String.self, is: .email, required: true)
-            // Longitud mínima de 8 caracteres
-            validations.add("password", as: String.self, is: .count(8...), required: true)
-            // Al menos un carácter especial
-            validations.add("password", as: String.self, is: .characterSet(.symbols + .punctuationCharacters), required: true)
-            // Al menos un número
-            validations.add("password", as: String.self, is: .characterSet(.decimalDigits), required: true)
-            // Al menos una letra mayúscula
-            validations.add("password", as: String.self, is: .characterSet(.uppercaseLetters), required: true)
-            // Al menos una letra minúscula
-            validations.add("password", as: String.self, is: .characterSet(.lowercaseLetters), required: true)
             
+            validations.add("firstSurname", as: String.self, is: !.empty, required: true)
+            
+            validations.add("secondSurname", as: String.self)
+            
+            validations.add("mobile", as: String.self, is: !.empty, required: true)
+            
+            validations.add("email", as: String.self, is: .email, required: true)
+            
+            validations.add("password", as: String.self, is: .count(8...), required: true)
         }
         
     }
