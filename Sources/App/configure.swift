@@ -15,6 +15,12 @@ public func configure(_ app: Application) async throws {
     // MARK: DB Conection
     try app.databases.use(.postgres(url: dbURL), as: .psql)
     
+    // MARK: Config Password
+    app.passwords.use(.bcrypt)
+    
+    // MARK: Migrations
+    app.migrations.add(ModelsMigration_v0())
+    try await app.autoMigrate()
             
     // MARK: Register Router
     try routes(app)

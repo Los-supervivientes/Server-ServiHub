@@ -26,6 +26,7 @@ final class APIKeyMiddleware: AsyncMiddleware {
         }
 
         return try await next.respond(to: request)
+        
     }
     
 }

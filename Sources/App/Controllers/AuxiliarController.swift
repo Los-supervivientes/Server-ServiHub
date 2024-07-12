@@ -12,7 +12,9 @@ struct AuxiliarController: RouteCollection {
     
     // MARK: Override
     func boot(routes: any Vapor.RoutesBuilder) throws {
+        
         routes.get("version", use: needsUpdate)
+        
     }
     
     // MARK: Routes
@@ -27,6 +29,7 @@ struct AuxiliarController: RouteCollection {
         let needsUpdate = current < appStoreLiveVersion
         
         return Version(current: current, live: appStoreLiveVersion, needsUpdate: needsUpdate)
+        
     }
     
 }
