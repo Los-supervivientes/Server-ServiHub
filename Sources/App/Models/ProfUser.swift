@@ -155,6 +155,21 @@ extension ProfUser {
 }
 
 
+// MARK: - Authenticable
+extension ProfUser: ModelAuthenticatable {
+    
+    static var usernameKey = \ProfUser.$email
+    static var passwordHashKey = \ProfUser.$password
+    
+    func verify(password: String) throws -> Bool {
+        
+        try Bcrypt.verify(password, created: self.password)
+        
+    }
+    
+}
+
+
 
 
 

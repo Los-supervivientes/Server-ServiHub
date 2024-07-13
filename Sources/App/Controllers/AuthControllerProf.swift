@@ -1,25 +1,25 @@
 //
-//  AuthController.swift
+//  AuthControllerProf.swift
 //
 //
-//  Created by Jose Bueno Cruz on 10/7/24.
+//  Created by Jose Bueno Cruz on 13/7/24.
 //
 
 import Vapor
 
 // MARK: - AuthController
-struct AuthController: RouteCollection {
+struct AuthControllerProf: RouteCollection {
     
     // MARK: Override
     func boot(routes: any Vapor.RoutesBuilder) throws {
         
-        routes.group("auth") { builder in
+        routes.group("profauth") { builder in
             
-            builder.post("signup", use: signUp)
+            builder.post("profsignup", use: profSignUp)
             
-            builder.group(User.authenticator(), User.guardMiddleware()) { builder in
+            builder.group(ProfUser.authenticator(), ProfUser.guardMiddleware()) { builder in
                 
-                builder.get("signin", use: signIn)
+                builder.get("profsignin", use: profSignIn)
                 
             }
             
@@ -33,36 +33,38 @@ struct AuthController: RouteCollection {
         
     }
     
-    // MARK: Routes
     @Sendable
-    func signUp(req: Request) async throws -> JWTToken.Public {
+    func profSignUp(req: Request) async throws -> JWTToken.Public {
         
         // Validate user
-        try User.Create.validate(content: req)
+        try ProfUser.Create.validate(content: req)
         
         // Decode body data
-        let userCreate = try req.content.decode(User.Create.self)
+        let userCreate = try req.content.decode(ProfUser.Create.self)
         let hashed = try req.password.hash(userCreate.password)
     
         // Save user to DB
-        let user = User(name: userCreate.name, firstSurname: userCreate.firstSurname,
-                        secondSurname: userCreate.secondSurname, mobile: userCreate.mobile,
-                        email: userCreate.email, password: hashed)
-        try await user.create(on: req.db)
+        let profUser = ProfUser(name: userCreate.name, firstSurname: userCreate.firstSurname,
+                                mobile: userCreate.mobile, email: userCreate.email, password: hashed,
+                                street: userCreate.street, city: userCreate.city, state: userCreate.state,
+                                postalCode: userCreate.postalCode, country: userCreate.country,
+                                categoryBusiness: userCreate.categoryBusiness,
+                                companyName: userCreate.companyName, nif: userCreate.nif)
+        try await profUser.create(on: req.db)
+        
         
         // JWT Tokens
-        let tokens = JWTToken.generateTokens(user: user.id!)
+        let tokens = JWTToken.generateTokens(user: profUser.id!)
         let accesSigned = try req.jwt.sign(tokens.access)
         let refreshSigned = try req.jwt.sign(tokens.refresh)
         
         return JWTToken.Public(accessToken: accesSigned, refreshToken: refreshSigned)
-        
     }
     
     @Sendable
-    func signIn(req: Request) async throws -> JWTToken.Public {
+    func profSignIn(req: Request) async throws -> JWTToken.Public {
         
-        let user = try req.auth.require(User.self)
+        let user = try req.auth.require(ProfUser.self)
         
         // JWT Tokens
         let tokens = JWTToken.generateTokens(user: user.id!)
@@ -81,3 +83,4 @@ struct AuthController: RouteCollection {
     }
     
 }
+

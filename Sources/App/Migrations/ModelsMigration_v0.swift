@@ -54,6 +54,7 @@ struct ModelsMigration_v0: AsyncMigration {
     func revert(on database: any Database) async throws {
         
         try await database.schema(User.schema).delete()
+        try await database.schema(ProfUser.schema).delete()
         
     }
     
