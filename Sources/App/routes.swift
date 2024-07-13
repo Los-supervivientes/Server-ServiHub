@@ -1,14 +1,18 @@
 import Fluent
 import Vapor
 
+// MARK: - Routes
 func routes(_ app: Application) throws {
-    app.get { req async in
-        "It works!"
+    
+    // MARK: Group Api
+    try app.group("api") { builder in
+        
+        try builder.group(APIKeyMiddleware()) { builder in
+            try builder.register(collection: AuxiliarController())
+            try builder.register(collection: AuthController())
+            try builder.register(collection: AuthControllerProf())
+        }
+        
     }
-
-    app.get("hello") { req async -> String in
-        "Hello, world!"
-    }
-
-    try app.register(collection: TodoController())
+    
 }

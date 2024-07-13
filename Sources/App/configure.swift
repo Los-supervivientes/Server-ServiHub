@@ -2,22 +2,30 @@ import NIOSSL
 import Fluent
 import FluentPostgresDriver
 import Vapor
+import JWT
 
-// configures your application
+// MARK: - Configure App
 public func configure(_ app: Application) async throws {
-    // uncomment to serve files from /Public folder
-    // app.middleware.use(FileMiddleware(publicDirectory: app.directory.publicDirectory))
 
-    app.databases.use(DatabaseConfigurationFactory.postgres(configuration: .init(
-        hostname: Environment.get("DATABASE_HOST") ?? "localhost",
-        port: Environment.get("DATABASE_PORT").flatMap(Int.init(_:)) ?? SQLPostgresConfiguration.ianaPortNumber,
-        username: Environment.get("DATABASE_USERNAME") ?? "vapor_username",
-        password: Environment.get("DATABASE_PASSWORD") ?? "vapor_password",
-        database: Environment.get("DATABASE_NAME") ?? "vapor_database",
-        tls: .prefer(try .init(configuration: .clientDefault)))
-    ), as: .psql)
-
-    app.migrations.add(CreateTodo())
-    // register routes
+    // MARK: Environment Variables
+    guard let jwtKey = Environment.get("JWT_KEY") else { fatalError("JWT Key not found")}
+    guard let _ = Environment.process.API_KEY else {fatalError("JWT Key not found")}
+    guard let dbURL = Environment.process.DATABASE_URL else {fatalError("DB URL not found")}
+    guard let _ = Environment.process.APP_BUNDLE_ID else {fatalError("APP Bundle ID not found")}
+    
+    // MARK: Config JWT
+    app.jwt.signers.use(.hs256(key: jwtKey))
+    
+    // MARK: DB Conection
+    try app.databases.use(.postgres(url: dbURL), as: .psql)
+    
+    // MARK: Config Password
+    app.passwords.use(.bcrypt)
+    
+    // MARK: Migrations
+    app.migrations.add(ModelsMigration_v0())
+    try await app.autoMigrate()
+            
+    // MARK: Register Router
     try routes(app)
 }
