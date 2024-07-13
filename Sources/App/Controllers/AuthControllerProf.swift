@@ -33,6 +33,7 @@ struct AuthControllerProf: RouteCollection {
         
     }
     
+    // MARK: ProfSignUp
     @Sendable
     func profSignUp(req: Request) async throws -> JWTToken.Public {
         
@@ -52,19 +53,48 @@ struct AuthControllerProf: RouteCollection {
                                 companyName: userCreate.companyName, nif: userCreate.nif)
         try await profUser.create(on: req.db)
         
+        return try generateTokens(req: req, user: profUser)
         
-        // JWT Tokens
-        let tokens = JWTToken.generateTokens(user: profUser.id!)
-        let accesSigned = try req.jwt.sign(tokens.access)
-        let refreshSigned = try req.jwt.sign(tokens.refresh)
-        
-        return JWTToken.Public(accessToken: accesSigned, refreshToken: refreshSigned)
     }
     
+    // MARK: ProfSignIn
     @Sendable
     func profSignIn(req: Request) async throws -> JWTToken.Public {
         
-        let user = try req.auth.require(ProfUser.self)
+        let profUser = try req.auth.require(ProfUser.self)
+        
+        return try generateTokens(req: req, user: profUser)
+        
+    }
+    
+    // MARK: Refresh
+    @Sendable
+    func refresh(req: Request) async throws -> JWTToken.Public {
+        
+        // Get token
+        let token = try req.auth.require(JWTToken.self)
+        
+        // Verify token type
+        guard token.type == .refresh else {
+            throw Abort(.methodNotAllowed, reason: "Token type is invalid. You need a refresh token.")
+        }
+        
+        let userID = UUID(token.sub.value)
+        guard let profUser = try await ProfUser.find(userID, on: req.db) else {
+            throw Abort(.unauthorized)
+        }
+        
+        return try generateTokens(req: req, user: profUser)
+        
+    }
+    
+}
+
+// MARK: - Extension AuthControllerProf
+extension AuthControllerProf {
+    
+    // MARK: GenerateTokens
+    func generateTokens(req: Request, user: ProfUser) throws -> JWTToken.Public {
         
         // JWT Tokens
         let tokens = JWTToken.generateTokens(user: user.id!)
@@ -74,13 +104,5 @@ struct AuthControllerProf: RouteCollection {
         return JWTToken.Public(accessToken: accesSigned, refreshToken: refreshSigned)
         
     }
-    
-    @Sendable
-    func refresh(req: Request) async throws -> JWTToken.Public {
-        
-        return JWTToken.Public(accessToken: "", refreshToken: "")
-        
-    }
-    
 }
 

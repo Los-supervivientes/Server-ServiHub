@@ -50,20 +50,49 @@ struct AuthController: RouteCollection {
                         email: userCreate.email, password: hashed)
         try await user.create(on: req.db)
         
-        // JWT Tokens
-        let tokens = JWTToken.generateTokens(user: user.id!)
-        let accesSigned = try req.jwt.sign(tokens.access)
-        let refreshSigned = try req.jwt.sign(tokens.refresh)
-        
-        return JWTToken.Public(accessToken: accesSigned, refreshToken: refreshSigned)
+        return try generateTokens(req: req, user: user)
         
     }
     
+    // MARK: SignIn
     @Sendable
     func signIn(req: Request) async throws -> JWTToken.Public {
         
         let user = try req.auth.require(User.self)
         
+        return try generateTokens(req: req, user: user)
+        
+    }
+    
+    // MARK: Refresh
+    @Sendable
+    func refresh(req: Request) async throws -> JWTToken.Public {
+        
+        // Get token
+        let token = try req.auth.require(JWTToken.self)
+        
+        // Verify token type
+        guard token.type == .refresh else {
+            throw Abort(.methodNotAllowed, reason: "Token type is invalid. You need a refresh token.")
+        }
+        
+        let userID = UUID(token.sub.value)
+        guard let user = try await User.find(userID, on: req.db) else {
+            throw Abort(.unauthorized)
+        }
+        
+        return try generateTokens(req: req, user: user)
+        
+    }
+    
+}
+
+// MARK: - Extension AuthController
+extension AuthController {
+    
+    // MARK: GenerateTokens
+    func generateTokens(req: Request, user: User) throws -> JWTToken.Public {
+        
         // JWT Tokens
         let tokens = JWTToken.generateTokens(user: user.id!)
         let accesSigned = try req.jwt.sign(tokens.access)
@@ -72,12 +101,5 @@ struct AuthController: RouteCollection {
         return JWTToken.Public(accessToken: accesSigned, refreshToken: refreshSigned)
         
     }
-    
-    @Sendable
-    func refresh(req: Request) async throws -> JWTToken.Public {
-        
-        return JWTToken.Public(accessToken: "", refreshToken: "")
-        
-    }
-    
 }
+
