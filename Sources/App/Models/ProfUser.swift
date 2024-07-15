@@ -157,14 +157,16 @@ extension ProfUser {
 
 // MARK: - Authenticable
 extension ProfUser: ModelAuthenticatable {
-    
-    static var usernameKey = \ProfUser.$email
-    static var passwordHashKey = \ProfUser.$password
+
+    static var usernameKey: KeyPath<ProfUser, Field<String>> {
+        return \ProfUser.$email
+    }
+    static var passwordHashKey: KeyPath<ProfUser, Field<String>> {
+        return \ProfUser.$password
+    }
     
     func verify(password: String) throws -> Bool {
-        
-        try Bcrypt.verify(password, created: self.password)
-        
+        return try Bcrypt.verify(password, created: self.password)
     }
     
 }

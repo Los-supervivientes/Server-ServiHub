@@ -98,7 +98,7 @@ extension AuthController {
         let accesSigned = try req.jwt.sign(tokens.access)
         let refreshSigned = try req.jwt.sign(tokens.refresh)
         
-        return JWTToken.Public(accessToken: accesSigned, refreshToken: refreshSigned)
+        return JWTToken.Public(accessToken: accesSigned, refreshToken: refreshSigned, userID: user.id)
         
     }
 }

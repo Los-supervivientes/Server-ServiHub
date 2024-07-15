@@ -45,7 +45,8 @@ struct ModelsMigration_v0: AsyncMigration {
             .field("category_business", .string, .required)
             .field("company_name", .string, .required)
             .field("nif", .string, .required)
-            .unique(on: "email", "nif")
+            .unique(on: "email")
+            .unique(on: "nif")
             .create()
         
     }

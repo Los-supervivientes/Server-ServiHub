@@ -54,6 +54,7 @@ extension JWTToken {
         
         let accessToken: String
         let refreshToken: String
+        let userID: UUID?
         
     }
     

@@ -13,7 +13,7 @@ struct AuthControllerProf: RouteCollection {
     // MARK: Override
     func boot(routes: any Vapor.RoutesBuilder) throws {
         
-        routes.group("profauth") { builder in
+        routes.group("auth") { builder in
             
             builder.post("profsignup", use: profSignUp)
             
@@ -25,7 +25,7 @@ struct AuthControllerProf: RouteCollection {
             
             builder.group(JWTToken.authenticator(), JWTToken.guardMiddleware()) { builder in
                 
-                builder.get("refresh", use: refresh)
+                builder.get("profrefresh", use: profRefresh)
                 
             }
             
@@ -69,7 +69,7 @@ struct AuthControllerProf: RouteCollection {
     
     // MARK: Refresh
     @Sendable
-    func refresh(req: Request) async throws -> JWTToken.Public {
+    func profRefresh(req: Request) async throws -> JWTToken.Public {
         
         // Get token
         let token = try req.auth.require(JWTToken.self)
@@ -101,7 +101,7 @@ extension AuthControllerProf {
         let accesSigned = try req.jwt.sign(tokens.access)
         let refreshSigned = try req.jwt.sign(tokens.refresh)
         
-        return JWTToken.Public(accessToken: accesSigned, refreshToken: refreshSigned)
+        return JWTToken.Public(accessToken: accesSigned, refreshToken: refreshSigned, userID: user.id)
         
     }
 }

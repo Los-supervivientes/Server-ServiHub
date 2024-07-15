@@ -104,14 +104,16 @@ extension User {
 
 // MARK: - Authenticable
 extension User: ModelAuthenticatable {
-    
-    static var usernameKey = \User.$email
-    static var passwordHashKey = \User.$password
+
+    static var usernameKey: KeyPath<User, Field<String>> {
+        return \User.$email
+    }
+    static var passwordHashKey: KeyPath<User, Field<String>> {
+        return \User.$password
+    }
     
     func verify(password: String) throws -> Bool {
-        
-        try Bcrypt.verify(password, created: self.password)
-        
+        return try Bcrypt.verify(password, created: self.password)
     }
     
 }
