@@ -49,6 +49,16 @@ struct ModelsMigration_v0: AsyncMigration {
             .unique(on: "nif")
             .create()
         
+        try await database
+            .schema(Category.schema)
+            .id()
+            .field("name", .string, .required)
+            .field("description", .string)
+            .field("imageURL", .string)
+            .field("parent_id", .uuid, .references("categories", "id"))
+            .unique(on: "name")
+            .create()
+        
     }
     
     // MARK: Prepare
@@ -56,6 +66,7 @@ struct ModelsMigration_v0: AsyncMigration {
         
         try await database.schema(User.schema).delete()
         try await database.schema(ProfUser.schema).delete()
+        try await database.schema(Category.schema).delete()
         
     }
     

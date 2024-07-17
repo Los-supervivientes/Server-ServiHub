@@ -8,7 +8,7 @@
 import Vapor
 
 // MARK: - AuxliarController
-struct AuxiliarController: RouteCollection {
+struct VersionController: RouteCollection {
     
     // MARK: Override
     func boot(routes: any Vapor.RoutesBuilder) throws {

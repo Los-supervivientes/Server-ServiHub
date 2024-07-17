@@ -24,6 +24,7 @@ public func configure(_ app: Application) async throws {
     
     // MARK: Migrations
     app.migrations.add(ModelsMigration_v0())
+    app.migrations.add(PopulateInitialData())
     try await app.autoMigrate()
             
     // MARK: Register Router

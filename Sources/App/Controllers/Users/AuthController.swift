@@ -37,7 +37,7 @@ struct AuthController: RouteCollection {
     @Sendable
     func signUp(req: Request) async throws -> JWTToken.Public {
         
-        // Validate user
+        // Validate content
         try User.Create.validate(content: req)
         
         // Decode body data

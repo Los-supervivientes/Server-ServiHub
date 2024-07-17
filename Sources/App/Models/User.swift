@@ -26,7 +26,7 @@ final class User: Model, Content, @unchecked Sendable {
     @Field(key: "first_surname")
     var firstSurname: String
     
-    @Field(key: "second_surname")
+    @OptionalField(key: "second_surname")
     var secondSurname: String?
     
     @Field(key: "mobile")
@@ -38,7 +38,6 @@ final class User: Model, Content, @unchecked Sendable {
     @Field(key: "password")
     var password: String
 
-    
     // MARK: Inits
     init() { }
     
@@ -58,7 +57,7 @@ final class User: Model, Content, @unchecked Sendable {
 // MARK: - Extension User DTOs
 extension User {
     
-    // MARK: Create
+    // MARK: Create Validate
     struct Create: Content, Validatable {
         
         // MARK: Properties
@@ -86,6 +85,29 @@ extension User {
         
     }
     
+    // MARK: Create Validate
+    struct Update: Content, Validatable {
+        
+        // MARK: Properties
+        let name: String
+        let firstSurname: String
+        let secondSurname: String
+        let mobile: String
+        
+        // MARK: Validations
+        static func validations(_ validations: inout Vapor.Validations) {
+            validations.add("name", as: String.self, is: !.empty, required: true)
+            
+            validations.add("firstSurname", as: String.self, is: !.empty, required: true)
+            
+            validations.add("secondSurname", as: String.self)
+            
+            validations.add("mobile", as: String.self, is: !.empty, required: true)
+
+        }
+        
+    }
+    
     // MARK: Public
     struct Public: Content {
         
@@ -108,6 +130,7 @@ extension User: ModelAuthenticatable {
     static var usernameKey: KeyPath<User, Field<String>> {
         return \User.$email
     }
+    
     static var passwordHashKey: KeyPath<User, Field<String>> {
         return \User.$password
     }
