@@ -1,6 +1,6 @@
 //
-//  File.swift
-//  
+//  PopulateInitialData.swift
+//
 //
 //  Created by Jose Bueno Cruz on 16/7/24.
 //
@@ -12,7 +12,7 @@ import Fluent
 struct PopulateInitialData: AsyncMigration {
 
     func prepare(on database: Database) async throws {
-            // Crear categorías principales y sus subcategorías
+            // Create main categories and their subcategories
             let hogarYJardin = Category(name: "Hogar y Jardín", description: "Categoría principal de Hogar y Jardín.", imageURL: "http://example.com/hogar_y_jardin.png")
             let saludYBienestar = Category(name: "Salud y Bienestar", description: "Categoría principal de Salud y Bienestar.", imageURL: "http://example.com/salud_y_bienestar.png")
             let automovilesYVehiculos = Category(name: "Automóviles y Vehículos", description: "Categoría principal de Automóviles y Vehículos.", imageURL: "http://example.com/automoviles_y_vehiculos.png")
@@ -138,7 +138,7 @@ struct PopulateInitialData: AsyncMigration {
                 ("Recados y mensajería", otros)
             ]
 
-            // Crear las subcategorías y asignar a la categoría principal
+            // Assign subcategories to main category
             for (subcategoryName, parentCategory) in subcategories {
                 let subcategory = Category(name: subcategoryName)
                 subcategory.$parent.id = parentCategory.id

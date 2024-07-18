@@ -13,6 +13,9 @@ public func configure(_ app: Application) async throws {
     guard let dbURL = Environment.process.DATABASE_URL else {fatalError("DB URL not found")}
     guard let _ = Environment.process.APP_BUNDLE_ID else {fatalError("APP Bundle ID not found")}
     
+    // MARK: Active public folder
+    app.middleware.use(FileMiddleware(publicDirectory: app.directory.publicDirectory))
+    
     // MARK: Config JWT
     app.jwt.signers.use(.hs256(key: jwtKey))
     

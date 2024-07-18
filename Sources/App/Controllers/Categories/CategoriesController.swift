@@ -10,21 +10,20 @@ import Fluent
 
 // MARK: - CategoriesController
 struct CategoryController: RouteCollection {
+    
+    // MARK: Override
     func boot(routes: RoutesBuilder) throws {
         
         routes.group("categories") { builder in
             
-            builder.group(JWTToken.authenticator(), JWTToken.guardMiddleware()) { builder in
-                
-                builder.get(use: getAllCategories)
-                builder.get(":categoryID", use: getCategoryByID)
+            builder.get(use: getAllCategories)
+            builder.get(":categoryID", use: getCategoryByID)
                 
             }
-            
-        }
         
     }
     
+    // MARK: - Get All Categories
     @Sendable
     func getAllCategories(req: Request) throws -> EventLoopFuture<[Category]> {
         
@@ -32,7 +31,7 @@ struct CategoryController: RouteCollection {
         
     }
 
-
+    // MARK: - Get Category By ID
     @Sendable
     func getCategoryByID(req: Request) throws -> EventLoopFuture<Category> {
         
