@@ -17,7 +17,7 @@ struct CategoryController: RouteCollection {
         routes.group("categories") { builder in
             
             builder.get(use: getAllCategories)
-            builder.get(":categoryID", use: getCategoryByID)
+//            builder.get(":categoryID", use: getCategoryByID)
                 
             }
         
@@ -27,20 +27,20 @@ struct CategoryController: RouteCollection {
     @Sendable
     func getAllCategories(req: Request) throws -> EventLoopFuture<[Category]> {
         
-        Category.query(on: req.db).with(\.$children).all()
+        Category.query(on: req.db).all()
         
     }
 
     // MARK: - Get Category By ID
-    @Sendable
-    func getCategoryByID(req: Request) throws -> EventLoopFuture<Category> {
-        
-        Category.find(req.parameters.get("categoryID"), on: req.db)
-            .unwrap(or: Abort(.notFound))
-            .flatMap { category in
-                category.$children.load(on: req.db).map { category }
-            }
-        
-    }
+//    @Sendable
+//    func getCategoryByID(req: Request) throws -> EventLoopFuture<Category> {
+//        
+//        Category.find(req.parameters.get("categoryID"), on: req.db)
+//            .unwrap(or: Abort(.notFound))
+//            .flatMap { category in
+//                category.$children.load(on: req.db).map { category }
+//            }
+//        
+//    }
     
 }

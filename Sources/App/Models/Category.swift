@@ -12,6 +12,7 @@ final class Category: Model, Content, @unchecked Sendable {
     
     // MARK: Properties
     static let schema = "categories"
+    var items: [String] = []
     
     @ID(key: .id)
     var id: UUID?
@@ -19,27 +20,12 @@ final class Category: Model, Content, @unchecked Sendable {
     @Field(key: "name")
     var name: String
     
-    @OptionalField(key: "description")
-    var description: String?
-    
-    @OptionalField(key: "imageURL")
-    var imageURL: String?
-    
-    @OptionalParent(key: "parent_id")
-    var parent: Category?
-    
-    @Children(for: \.$parent)
-    var children: [Category]
-    
     // MARK: Inits
     init() { }
     
-    init(id: UUID? = nil, name: String, description: String? = nil, imageURL: String? = nil, parentID: UUID? = nil) {
+    init(id: UUID? = nil, name: String) {
         self.id = id
         self.name = name
-        self.description = description
-        self.imageURL = imageURL
-        self.$parent.id = parentID
     }
     
 }
@@ -52,16 +38,33 @@ extension Category {
 
         // MARK: Properties
         let name: String
-        let description: String?
-        let imageURL: String?
         
         // MARK: Validations
         static func validations(_ validations: inout Vapor.Validations) {
             validations.add("name", as: String.self, is: !.empty, required: true)
-            validations.add("description", as: String.self)
-            validations.add("imageURL", as: String.self)
         }
         
     }
+    
+}
+
+extension Category: Collection {
+    typealias Index = Int
+        typealias Element = String // Assuming your elements are strings
+
+        var startIndex: Index { return items.startIndex }
+        var endIndex: Index { return items.endIndex }
+
+        func index(after i: Index) -> Index {
+            return items.index(after: i)
+        }
+
+        subscript(position: Index) -> Element {
+            return items[position]
+        }
+
+        static var empty: Category {
+            return Category()
+        }
     
 }
