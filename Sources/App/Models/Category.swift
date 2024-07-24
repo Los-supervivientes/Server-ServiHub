@@ -19,27 +19,15 @@ final class Category: Model, Content, @unchecked Sendable {
     @Field(key: "name")
     var name: String
     
-    @OptionalField(key: "description")
-    var description: String?
-    
-    @OptionalField(key: "imageURL")
-    var imageURL: String?
-    
-    @OptionalParent(key: "parent_id")
-    var parent: Category?
-    
-    @Children(for: \.$parent)
-    var children: [Category]
+    @Children(for: \.$category)
+    var services: [Service]
     
     // MARK: Inits
     init() { }
     
-    init(id: UUID? = nil, name: String, description: String? = nil, imageURL: String? = nil, parentID: UUID? = nil) {
+    init(id: UUID? = nil, name: String) {
         self.id = id
         self.name = name
-        self.description = description
-        self.imageURL = imageURL
-        self.$parent.id = parentID
     }
     
 }
@@ -52,14 +40,10 @@ extension Category {
 
         // MARK: Properties
         let name: String
-        let description: String?
-        let imageURL: String?
         
         // MARK: Validations
         static func validations(_ validations: inout Vapor.Validations) {
             validations.add("name", as: String.self, is: !.empty, required: true)
-            validations.add("description", as: String.self)
-            validations.add("imageURL", as: String.self)
         }
         
     }

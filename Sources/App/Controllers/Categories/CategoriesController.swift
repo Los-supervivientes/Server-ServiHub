@@ -27,7 +27,7 @@ struct CategoryController: RouteCollection {
     @Sendable
     func getAllCategories(req: Request) throws -> EventLoopFuture<[Category]> {
         
-        Category.query(on: req.db).with(\.$children).all()
+        Category.query(on: req.db).all()
         
     }
 
@@ -37,9 +37,6 @@ struct CategoryController: RouteCollection {
         
         Category.find(req.parameters.get("categoryID"), on: req.db)
             .unwrap(or: Abort(.notFound))
-            .flatMap { category in
-                category.$children.load(on: req.db).map { category }
-            }
         
     }
     

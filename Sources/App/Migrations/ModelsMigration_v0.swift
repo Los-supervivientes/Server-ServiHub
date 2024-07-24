@@ -11,7 +11,7 @@ import Fluent
 // MARK: ModelMigration V0
 struct ModelsMigration_v0: AsyncMigration {
     
-    // MARK: Revert
+    // MARK: Prepare
     func prepare(on database: any Database) async throws {
         
         try await database
@@ -53,20 +53,27 @@ struct ModelsMigration_v0: AsyncMigration {
             .schema(Category.schema)
             .id()
             .field("name", .string, .required)
-            .field("description", .string)
-            .field("imageURL", .string)
-            .field("parent_id", .uuid, .references("categories", "id"))
             .unique(on: "name")
+            .create()
+        
+        try await database
+            .schema(Service.schema)
+            .id()
+            .field("name", .string, .required)
+            .field("note", .float)
+            .field("distance", .float)
+            .field("categoryID", .uuid, .required, .references("categories", "id", onDelete: .cascade))
             .create()
         
     }
     
-    // MARK: Prepare
+    // MARK: Revert
     func revert(on database: any Database) async throws {
         
         try await database.schema(User.schema).delete()
         try await database.schema(ProfUser.schema).delete()
         try await database.schema(Category.schema).delete()
+        try await database.schema(Service.schema).delete()
         
     }
     
