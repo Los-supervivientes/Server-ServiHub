@@ -63,6 +63,7 @@ struct ModelsMigration_v0: AsyncMigration {
             .field("note", .float)
             .field("distance", .float)
             .field("categoryID", .uuid, .required, .references("categories", "id", onDelete: .cascade))
+            .field("profUserID", .uuid, .required, .references("profusers", "id", onDelete: .cascade))
             .create()
         
     }

@@ -29,15 +29,20 @@ final class Service: Model, Content, @unchecked Sendable {
     @Parent(key: "categoryID")
     var category: Category
     
+    @Parent(key: "profUserID")
+    var profUser: ProfUser
+    
     init() { }
     
     // MARK: Inits
-    init(id: UUID? = nil, name: String, note: Float? = nil, distance: Float? = nil, categoryID: UUID) {
+    init(id: UUID? = nil, name: String, note: Float? = nil, distance: Float? = nil,
+         categoryID: UUID, profUserID: UUID) {
         self.id = id
         self.name = name
         self.note = note
         self.distance = distance
         self.$category.id = categoryID
+        self.$profUser.id = profUserID
     }
     
 }
@@ -53,14 +58,18 @@ extension Service {
         let note: Float
         let distance: Float
         let categoryID: UUID
+        let profUserID: UUID
 
         
         // MARK: Validations
         static func validations(_ validations: inout Vapor.Validations) {
+            
             validations.add("name", as: String.self, is: !.empty, required: true)
             validations.add("note", as: Float.self, is: .valid)
             validations.add("distance", as: Float.self, is: .valid)
             validations.add("categoryID", as: UUID.self, is: .valid, required: true)
+            validations.add("profUserID", as: UUID.self, is: .valid, required: true)
+            
         }
         
     }

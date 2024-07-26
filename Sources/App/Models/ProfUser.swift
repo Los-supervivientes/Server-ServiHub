@@ -62,6 +62,9 @@ final class ProfUser: Model, Content, @unchecked Sendable {
     @Field(key: "nif")
     var nif: String
     
+    @Children(for: \.$profUser)
+    var services: [Service]
+    
     // MARK: Inits
     init() { }
     

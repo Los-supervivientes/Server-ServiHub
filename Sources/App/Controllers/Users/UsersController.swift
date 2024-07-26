@@ -31,7 +31,7 @@ struct UsersController: RouteCollection {
     @Sendable
     func getUserByID(req: Request) async throws -> User.Public {
         
-        // Unpack userid parameter
+        // userid parameter
         let userID = req.parameters.get("userID", as: UUID.self)
         
         // Search the user in the database by ID
