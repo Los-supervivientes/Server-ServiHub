@@ -10,8 +10,8 @@ import Foundation
 // MARK: - Constants
 struct Constants {
     
-    // MARK: Time Life Tokens
-    static let accessTokenLifeTime: Double = 60 * 60    // 1 hour
+    // MARK: - Time Life Tokens
+    static let accessTokenLifeTime: Double = 60 * 60 * 24    // 1 day
     static let refreshTokenLifeTime: Double = 60 * 60 * 24 * 7   // 1 week
     
 }

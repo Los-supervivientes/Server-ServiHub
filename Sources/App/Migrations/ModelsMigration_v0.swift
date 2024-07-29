@@ -8,12 +8,14 @@
 import Vapor
 import Fluent
 
-// MARK: ModelMigration V0
+// MARK: - ModelMigration V0
 struct ModelsMigration_v0: AsyncMigration {
     
     // MARK: Prepare
+    // Prepares the database schema by creating tables and defining their structure.
     func prepare(on database: any Database) async throws {
         
+        // Create the 'users' table
         try await database
             .schema(User.schema)
             .id()
@@ -27,6 +29,7 @@ struct ModelsMigration_v0: AsyncMigration {
             .unique(on: "email")
             .create()
         
+        // Create the 'profusers' table
         try await database
             .schema(ProfUser.schema)
             .id()
@@ -49,16 +52,20 @@ struct ModelsMigration_v0: AsyncMigration {
             .unique(on: "nif")
             .create()
         
+        // Create the 'categories' table
         try await database
             .schema(Category.schema)
             .id()
+            .field("created_at", .string)
             .field("name", .string, .required)
             .unique(on: "name")
             .create()
         
+        // Create the 'services' table
         try await database
             .schema(Service.schema)
             .id()
+            .field("created_at", .string)
             .field("name", .string, .required)
             .field("note", .float)
             .field("distance", .float)
@@ -69,8 +76,10 @@ struct ModelsMigration_v0: AsyncMigration {
     }
     
     // MARK: Revert
+    // Reverts the database schema changes by deleting the tables.
     func revert(on database: any Database) async throws {
         
+        // Delete tables
         try await database.schema(User.schema).delete()
         try await database.schema(ProfUser.schema).delete()
         try await database.schema(Category.schema).delete()

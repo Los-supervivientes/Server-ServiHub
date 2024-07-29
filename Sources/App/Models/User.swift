@@ -57,7 +57,7 @@ final class User: Model, Content, @unchecked Sendable {
 // MARK: - Extension User DTOs
 extension User {
     
-    // MARK: Create Validate
+    // MARK: - Create Validate
     struct Create: Content, Validatable {
         
         // MARK: Properties
@@ -69,6 +69,7 @@ extension User {
         let password: String
         
         // MARK: Validations
+        // Validate fields for user creation
         static func validations(_ validations: inout Vapor.Validations) {
             validations.add("name", as: String.self, is: !.empty, required: true)
             
@@ -85,7 +86,7 @@ extension User {
         
     }
     
-    // MARK: Update Validate
+    // MARK: - Update Validate
     struct Update: Content, Validatable {
         
         // MARK: Properties
@@ -95,6 +96,7 @@ extension User {
         let mobile: String
         
         // MARK: Validations
+        // Validate fields for user update
         static func validations(_ validations: inout Vapor.Validations) {
             validations.add("name", as: String.self, is: !.empty, required: true)
             
@@ -108,7 +110,7 @@ extension User {
         
     }
     
-    // MARK: Public
+    // MARK: - Public
     struct Public: Content {
         
         // MARK: Properties
@@ -125,6 +127,7 @@ extension User {
 
 
 // MARK: - Authenticable
+// Extension to make User conform to ModelAuthenticatable for authentication
 extension User: ModelAuthenticatable {
 
     static var usernameKey: KeyPath<User, Field<String>> {
@@ -135,6 +138,7 @@ extension User: ModelAuthenticatable {
         return \User.$password
     }
     
+    // Verify password using Bcrypt
     func verify(password: String) throws -> Bool {
         return try Bcrypt.verify(password, created: self.password)
     }

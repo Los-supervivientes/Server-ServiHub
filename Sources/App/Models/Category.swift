@@ -8,6 +8,7 @@
 import Vapor
 import Fluent
 
+// MARK: - Category Model
 final class Category: Model, Content, @unchecked Sendable {
     
     // MARK: Properties
@@ -15,6 +16,9 @@ final class Category: Model, Content, @unchecked Sendable {
     
     @ID(key: .id)
     var id: UUID?
+    
+    @Timestamp(key: "created_at", on: .create, format: .iso8601)
+    var createdAt: Date?
     
     @Field(key: "name")
     var name: String
@@ -35,13 +39,14 @@ final class Category: Model, Content, @unchecked Sendable {
 // MARK: - Extension Categories DTOs
 extension Category {
     
-    // MARK: Create
+    // MARK: - Create
     struct Create: Content, Validatable {
 
         // MARK: Properties
         let name: String
         
         // MARK: Validations
+        // Function to define validations for the Create DTO
         static func validations(_ validations: inout Vapor.Validations) {
             validations.add("name", as: String.self, is: !.empty, required: true)
         }

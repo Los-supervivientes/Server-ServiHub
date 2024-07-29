@@ -94,7 +94,7 @@ final class ProfUser: Model, Content, @unchecked Sendable {
 // MARK: - Extension ProfUser DTOs
 extension ProfUser {
     
-    // MARK: Create Validate
+    // MARK: - Create Validate
     struct Create: Content, Validatable {
         
         // MARK: Properties
@@ -115,7 +115,9 @@ extension ProfUser {
         
         
         // MARK: Validations
+        // Validate fields for creating a ProfUser
         static func validations(_ validations: inout Vapor.Validations) {
+            
             validations.add("name", as: String.self, is: !.empty, required: true)
             validations.add("firstSurname", as: String.self, is: !.empty, required: true)
             validations.add("secondSurname", as: String.self)
@@ -130,11 +132,12 @@ extension ProfUser {
             validations.add("categoryBusiness", as: String.self, is: !.empty, required: true)
             validations.add("companyName", as: String.self, is: !.empty, required: true)
             validations.add("nif", as: String.self, is: !.empty, required: true)
+            
         }
         
     }
     
-    // MARK: Update Validate
+    // MARK: - Update Validate
     struct Update: Content, Validatable {
         
         // MARK: Properties
@@ -153,6 +156,7 @@ extension ProfUser {
         
         
         // MARK: Validations
+        // Validate fields for updating a ProfUser
         static func validations(_ validations: inout Vapor.Validations) {
             validations.add("name", as: String.self, is: !.empty, required: true)
             validations.add("firstSurname", as: String.self, is: !.empty, required: true)
@@ -170,7 +174,7 @@ extension ProfUser {
         
     }
     
-    // MARK: Public
+    // MARK: - Public
     struct Public: Content {
         
         // MARK: Properties
@@ -204,6 +208,7 @@ extension ProfUser: ModelAuthenticatable {
         return \ProfUser.$password
     }
     
+    // Verify password using Bcrypt
     func verify(password: String) throws -> Bool {
         return try Bcrypt.verify(password, created: self.password)
     }

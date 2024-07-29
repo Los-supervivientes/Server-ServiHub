@@ -11,11 +11,14 @@ import Fluent
 // MARK: - Services
 final class Service: Model, Content, @unchecked Sendable {
     
-    //MARK: - PROPERTIES
+    //MARK: Properties
     static let schema = "services"
     
     @ID(key: .id)
     var id: UUID?
+    
+    @Timestamp(key: "created_at", on: .create, format: .iso8601)
+    var createdAt: Date?
     
     @Field(key: "name")
     var name: String
@@ -32,9 +35,9 @@ final class Service: Model, Content, @unchecked Sendable {
     @Parent(key: "profUserID")
     var profUser: ProfUser
     
+    // MARK: Inits
     init() { }
     
-    // MARK: Inits
     init(id: UUID? = nil, name: String, note: Float? = nil, distance: Float? = nil,
          categoryID: UUID, profUserID: UUID) {
         self.id = id
@@ -51,9 +54,9 @@ final class Service: Model, Content, @unchecked Sendable {
 extension Service {
     
     //MARK: - Create Validate
-    struct Create: Content, Validatable {
+    struct CreateUpdate: Content, Validatable {
         
-        //MARK: - Properties
+        //MARK: Properties
         let name : String
         let note: Float
         let distance: Float
@@ -62,6 +65,7 @@ extension Service {
 
         
         // MARK: Validations
+        // Validate fields for creating or updating a service
         static func validations(_ validations: inout Vapor.Validations) {
             
             validations.add("name", as: String.self, is: !.empty, required: true)

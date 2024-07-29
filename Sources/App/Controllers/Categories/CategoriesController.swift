@@ -11,7 +11,8 @@ import Fluent
 // MARK: - CategoriesController
 struct CategoryController: RouteCollection {
     
-    // MARK: Override
+    // MARK: Route Registration
+    // Registers routes for category-related operations.
     func boot(routes: RoutesBuilder) throws {
         
         routes.group("categories") { builder in
@@ -23,18 +24,22 @@ struct CategoryController: RouteCollection {
         
     }
     
-    // MARK: - Get All Categories
+    // MARK: Get All Categories
+    // Retrieves all categories from the database.
     @Sendable
     func getAllCategories(req: Request) throws -> EventLoopFuture<[Category]> {
         
+        // Query the database to get all categories
         Category.query(on: req.db).all()
         
     }
 
-    // MARK: - Get Category By ID
+    // MARK: Get Category By ID
+    // Retrieves a specific category by its ID from the database.
     @Sendable
     func getCategoryByID(req: Request) throws -> EventLoopFuture<Category> {
         
+        // Find the category by its ID and return it
         Category.find(req.parameters.get("categoryID"), on: req.db)
             .unwrap(or: Abort(.notFound))
         

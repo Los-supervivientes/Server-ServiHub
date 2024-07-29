@@ -7,10 +7,11 @@
 
 import Vapor
 
-// MARK: - UserUpdateController
+// MARK: - UsersController
 struct UsersController: RouteCollection {
     
-    // MARK: Override
+    // MARK: Route Registration
+    // Registers routes for user-related operations.
     func boot(routes: any RoutesBuilder) throws {
         
         routes.group("users") { builder in
@@ -20,6 +21,7 @@ struct UsersController: RouteCollection {
                 builder.get("getuser", ":userID", use: getUserByID)
                 builder.put("updateuser", ":userID", use: updateUser)
                 builder.get("getallusers", use: getAllUsers)
+                builder.delete("deleteuser", use: deleteUser)
                 
             }
             
@@ -28,13 +30,14 @@ struct UsersController: RouteCollection {
     }
     
     // MARK: Get User by ID
+    // Retrieves a user by their ID.
     @Sendable
     func getUserByID(req: Request) async throws -> User.Public {
         
-        // userid parameter
+        // Get userID parameter from the request
         let userID = req.parameters.get("userID", as: UUID.self)
         
-        // Search the user in the database by ID
+        // Retrieve user from the database by ID
         guard let user = try await User.find(userID, on: req.db) else {
             throw Abort(.notFound)
         }
@@ -44,9 +47,11 @@ struct UsersController: RouteCollection {
                            secondSurname: user.secondSurname ?? "", mobile: user.mobile, email: user.email)
     }
     
-    // MARK: Put Update User
+    // MARK: Update User
+    // Updates user information based on the provided user ID.
     @Sendable
     func updateUser(req: Request) throws -> EventLoopFuture<User.Public> {
+        
         let updateData = try req.content.decode(User.Update.self)
         try User.Update.validate(content: req)
         
@@ -66,11 +71,15 @@ struct UsersController: RouteCollection {
                         mobile: user.mobile,
                         email: user.email
                     )
+                    
                 }
+                
             }
+        
     }
     
     // MARK: Get All Users
+    // Retrieves all users from the database.
     @Sendable
     func getAllUsers(req: Request) async throws -> [User.Public] {
         
@@ -82,6 +91,20 @@ struct UsersController: RouteCollection {
                             secondSurname: user.secondSurname ?? "", mobile: user.mobile, email: user.email)
                         
         }
+        
+    }
+    
+    // MARK: Delete User
+    // Deletes a user based on the provided user ID.
+    @Sendable
+    func deleteUser(_ req: Request) throws -> EventLoopFuture<HTTPStatus> {
+        
+        User.find(req.parameters.get("userID"), on: req.db)
+            .unwrap(or: Abort(.notFound))
+            .flatMap { user in
+                user.delete(on: req.db)
+            }
+            .transform(to: .noContent)
         
     }
     

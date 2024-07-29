@@ -9,20 +9,25 @@ import Vapor
 import Fluent
 
 // MARK: - Services Initial Data
+// Migration responsible for creating initial service data based on existing categories
 struct ServicesInitialData: AsyncMigration {
 
+    // MARK: - Prepare
+    // Prepares the initial data in the database
     func prepare(on database: Database) async throws {
-        // Recuperar todas las categorías
+        
+        // Fetch all categories from the database
         let categories = try await Category.query(on: database).all()
         
-        // Definir los servicios a agregar
-        var services: [Service] = []
+        var services: [Service] = []  // Array to hold the services to be created
         
+        // Iterate over each category to create associated services
         for category in categories {
             guard let categoryID = category.id else {
                 throw Abort(.internalServerError, reason: "Category ID is missing")
             }
             
+            // Create a professional user associated with the category
             let profUser = ProfUser(
                 name: "\(category.name) User",
                 firstSurname: "Apellido1",
@@ -40,13 +45,14 @@ struct ServicesInitialData: AsyncMigration {
                 nif: String(UUID())
             )
             
+            // Save the professional user to the database
             try await profUser.save(on: database)
             
             guard let profUserID = profUser.id else {
                 throw Abort(.internalServerError, reason: "Prof User ID is missing")
             }
             
-            
+            // Create services based on the category name
             switch category.name {
             case "Electricista":
                 services.append(Service(name: "Instalación Eléctrica", note: 5.0, distance: 10.0, categoryID: categoryID, profUserID: profUserID))
@@ -92,19 +98,21 @@ struct ServicesInitialData: AsyncMigration {
                 services.append(Service(name: "Asesoría Legal", note: 5.0, distance: 10.0, categoryID: categoryID, profUserID: profUserID))
                 services.append(Service(name: "Defensa Legal", note: 5.0, distance: 10.0, categoryID: categoryID, profUserID: profUserID))
             default:
-                continue
+                continue  // Skip categories that do not match any predefined cases
             }
         }
         
-        // Insertar todos los servicios en la base de datos
+        // Save all the created services to the database
         for service in services {
             try await service.save(on: database)
         }
     }
 
+    // MARK: - Revert
+    // Reverts the migration by deleting all services
     func revert(on database: Database) async throws {
-        // Eliminar todos los servicios
-        try await Service.query(on: database).delete()
+        try await Service.query(on: database).delete()  // Deletes all services from the database
     }
 }
+
 

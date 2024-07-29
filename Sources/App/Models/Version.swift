@@ -11,8 +11,8 @@ import Vapor
 struct Version: Content {
     
     // MARK: Properties
-    let current: String
-    let live: String
-    let needsUpdate: Bool
+    let current: String     // Current version
+    let live: String        // Live version
+    let needsUpdate: Bool   // Fag indicating if an update is needed
     
 }
