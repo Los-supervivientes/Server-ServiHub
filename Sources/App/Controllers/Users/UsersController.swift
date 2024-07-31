@@ -21,7 +21,7 @@ struct UsersController: RouteCollection {
                 builder.get("getuser", ":userID", use: getUserByID)
                 builder.put("updateuser", ":userID", use: updateUser)
                 builder.get("getallusers", use: getAllUsers)
-                builder.delete("deleteuser", use: deleteUser)
+                builder.delete("deleteuser", ":userID",use: deleteUser)
                 
             }
             

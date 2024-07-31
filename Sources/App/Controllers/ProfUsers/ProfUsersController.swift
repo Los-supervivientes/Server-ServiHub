@@ -22,7 +22,7 @@ struct ProfUsersController: RouteCollection {
                 builder.get("getprofuser", ":userID", use: getProfUserByID)
                 builder.put("updateprofuser", ":userID", use: updateProfUser)
                 builder.get("getallprofusers", use: getAllUsersProf)
-                builder.delete("deleteprofuser", use: deleteProfUser)
+                builder.delete("deleteprofuser", ":userID", use: deleteProfUser)
                 
             }
             
