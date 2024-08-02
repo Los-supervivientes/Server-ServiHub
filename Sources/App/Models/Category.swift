@@ -39,8 +39,8 @@ final class Category: Model, Content, @unchecked Sendable {
 // MARK: - Extension Categories DTOs
 extension Category {
     
-    // MARK: - Create
-    struct Create: Content, Validatable {
+    // MARK: - Create/Update Validate
+    struct CreateUpdate: Content, Validatable {
 
         // MARK: Properties
         let name: String

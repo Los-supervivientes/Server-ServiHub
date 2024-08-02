@@ -23,6 +23,7 @@ struct ServicesController: RouteCollection {
                 builder.get(use: getAllServices)
                 builder.get(":serviceID", use: getServiceByID)
                 builder.get("user", ":profUserID", use: getServicesForProfUser)
+                builder.get("category", ":categoryID", use: getServicesForCategory)
                 builder.post(use: createService)
                 builder.put(":serviceID", use: updateService)
                 builder.delete(":serviceID", use: deleteService)
@@ -84,6 +85,28 @@ struct ServicesController: RouteCollection {
             .all()
     }
     
+    // MARK: Get All Services for Category
+    // Retrieves all services associated with a specific category.
+    @Sendable
+    func getServicesForCategory(req: Request) async throws -> [Service] {
+        
+        // Extract category ID from request parameters
+        guard let categoryID = req.parameters.get("categoryID", as: UUID.self) else {
+            throw Abort(.badRequest)
+        }
+
+        // Find category by ID and retrieve their services
+        guard let category = try await Category.find(categoryID, on: req.db) else {
+            throw Abort(.notFound, reason: "ProfUser not found")
+        }
+
+        // Return services associated with the category
+        return try await category.$services.query(on: req.db)
+            .with(\.$category)
+            .with(\.$profUser)
+            .all()
+    }
+    
     // MARK: Create Service
     /// Creates a new service and saves it to the database.
     @Sendable
@@ -99,6 +122,7 @@ struct ServicesController: RouteCollection {
                               categoryID: serviceData.categoryID,
                               profUserID: serviceData.profUserID)
         
+        // Save the new Service to the database
         return service.save(on: req.db).map { service }
     }
     

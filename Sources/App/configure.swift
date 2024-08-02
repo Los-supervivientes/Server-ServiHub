@@ -5,14 +5,14 @@ import Vapor
 import JWT
 
 // MARK: - Configure App
-public func configure(_ app: Application) async throws {
+public func configure(_ app: Application) throws {
 
     // Retrieve and validate environment variables
     guard let jwtKey = Environment.get("JWT_KEY") else { fatalError("JWT Key not found")}
     guard let _ = Environment.process.API_KEY else {fatalError("JWT Key not found")}
     guard let dbURL = Environment.process.DATABASE_URL else {fatalError("DB URL not found")}
     guard let _ = Environment.process.APP_BUNDLE_ID else {fatalError("APP Bundle ID not found")}
-    
+        
     // Enable serving files from the public directory
     app.middleware.use(FileMiddleware(publicDirectory: app.directory.publicDirectory))
     
@@ -29,9 +29,11 @@ public func configure(_ app: Application) async throws {
     app.migrations.add(ModelsMigration_v0())
     app.migrations.add(InsertCategories())
     app.migrations.add(ServicesInitialData())
-    try await app.autoMigrate()
+    
+    // Ejecuta las migraciones sincrónicamente
+    try app.autoMigrate().wait()
             
     // Register routes
     try routes(app)
-    
 }
+
