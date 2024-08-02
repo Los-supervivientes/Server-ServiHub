@@ -37,6 +37,7 @@ struct CategoryController: RouteCollection {
         // Query the database to get all categories
         Category.query(on: req.db).all()
         
+        
     }
 
     // MARK: Get Category By ID

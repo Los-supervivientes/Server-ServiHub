@@ -17,7 +17,7 @@ enum Entrypoint {
         app.logger.debug("Running with \(executorTakeoverSuccess ? "SwiftNIO" : "standard") Swift Concurrency default executor")
         
         do {
-            try await configure(app)
+            try configure(app)
         } catch {
             app.logger.report(error: error)
             try? await app.asyncShutdown()
